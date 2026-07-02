@@ -218,18 +218,19 @@ In this task, you will open the semantic model you created in Task 2, switch to 
 1. From the left pane, click on **fabric-<inject key="DeploymentID" enableCopy="false"/> (1)** and select **Data Warehouse-<inject key="DeploymentID" enableCopy="false"/> (2)** Semantic model.
 
     ![](./Images/E2T3S1.png)
+   
+1. Click on Open **New semantic model**, from the toolbar on the top.
 
-1. Click on **Open semantic model** from the toolbar on the top.
+    ![](./Images/E2T2S15.png)
 
-    ![](./Images/upE2T3S2.png)
+1. In the new semantic model window, name it **Data Warehouse-<inject key="DeploymentID" enableCopy="false"/> (1)**. Then navigate to **Schemas > dbo > Tables (2)** and select the following tables and then click **Confirm (3)**:
 
-1. In the top right corner, click on **Viewing (1)** drop-down and select **Editing (2)**.
+    - **DimCustomer**
+    - **DimDate**
+    - **DimProduct**
+    - **FactSalesOrder**
 
-    ![](./Images/e2t3p5.png)
-
-1. In the model pane, rearrange the tables in your data warehouse so that the **FactSalesOrder** table is in the middle.
-
-    ![Screenshot of the data warehouse model page.](./Images/e2t3p6.png)
+        ![](./Images/e2t3p2.png)
 
 1. Drag the **ProductKey** field from the **FactSalesOrder** table and drop it on the **ProductKey** field in the **DimProduct** table. Then confirm the following relationship details.
 
