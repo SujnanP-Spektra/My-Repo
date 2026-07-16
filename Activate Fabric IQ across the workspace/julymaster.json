@@ -1,0 +1,22 @@
+[{
+  "Name": "Microsoft Fabric",
+  "Language": "English",
+  "Files": [
+    {
+      "RawFilePath": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/refs/heads/main/Activate%20Fabric%20IQ%20across%20the%20workspace/GettingStarted-V2.md",
+      "Order": 1
+    },
+    {
+      "RawFilePath": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/refs/heads/main/Activate%20Fabric%20IQ%20across%20the%20workspace/M8_Exercise01.md",
+      "Order": 2
+    },
+    {
+      "RawFilePath": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/refs/heads/main/Activate%20Fabric%20IQ%20across%20the%20workspace/M8_Exercise02.md",
+      "Order": 3
+    },
+    {
+      "RawFilePath": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/refs/heads/main/Activate%20Fabric%20IQ%20across%20the%20workspace/M8_Exercise03.md",
+      "Order": 4
+    }
+  ]
+}]
