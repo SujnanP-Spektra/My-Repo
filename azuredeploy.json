@@ -1,0 +1,325 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "description": "Windows Developer Platform: Coreutils & Dev Config Quick-Start. Single Windows 11 developer workstation. Follows CloudLabs parameter, script and output conventions. No other Azure services are used by the lab exercises."
+  },
+  "parameters": {
+    "azureUserName": {
+      "type": "string"
+    },
+    "azurePassword": {
+      "type": "securestring"
+    },
+    "ODLID": {
+      "type": "string"
+    },
+    "DeploymentID": {
+      "type": "string"
+    },
+    "adminUsername": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "trainerUserName": {
+      "type": "string"
+    },
+    "trainerUserPassword": {
+      "type": "securestring"
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D4s_v5",
+      "allowedValues": [
+        "Standard_D4s_v5",
+        "Standard_D8s_v5",
+        "Standard_D4as_v5",
+        "Standard_D8as_v5"
+      ],
+      "metadata": {
+        "description": "Must support nested virtualization for the Windows Sandbox and WSL tasks. B-series is excluded: no nested virtualization, and insufficient memory for a WinUI build plus a coding agent."
+      }
+    },
+    "useSpektraImage": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Set true only if the Spektra cloudlabs-windows-jumpvm offer publishes a Windows 11 SKU. When true, spektraImageSku is used with the matching plan block and no Trusted Launch profile. When false, the Azure Marketplace Windows 11 client image is used with Trusted Launch."
+      }
+    },
+    "spektraImageSku": {
+      "type": "string",
+      "defaultValue": "win11",
+      "metadata": {
+        "description": "SKU within the Spektra cloudlabs-windows-jumpvm offer. Only used when useSpektraImage is true."
+      }
+    },
+    "windowsDesktopSku": {
+      "type": "string",
+      "defaultValue": "win11-24h2-pro",
+      "allowedValues": [
+        "win11-24h2-pro",
+        "win11-24h2-ent",
+        "win11-25h2-pro",
+        "win11-25h2-ent"
+      ],
+      "metadata": {
+        "description": "Windows 11 client image SKU. Client images require an eligible subscription type or multitenant hosting rights."
+      }
+    }
+  },
+  "variables": {
+    "scripturl": "https://experienceazure.blob.core.windows.net/templates/cloudlabs-common/psscript-01.ps1",
+    "labScriptUrl": "https://experienceazure.blob.core.windows.net/templates/windows-devplatform-quickstart/labsetup.ps1",
+    "LabVMName": "[concat('labvm-', parameters('DeploymentID'))]",
+    "computerName": "[take(concat('cl', replace(parameters('DeploymentID'), '-', '')), 15)]",
+    "vnetName": "[concat('vnet-', parameters('DeploymentID'))]",
+    "subnetName": "default",
+    "nsgName": "[concat('nsg-', parameters('DeploymentID'))]",
+    "nicName": "[concat('nic-', parameters('DeploymentID'))]",
+    "pipName": "[concat('pip-', parameters('DeploymentID'))]",
+    "dnsLabel": "[toLower(concat('cl', uniqueString(resourceGroup().id, parameters('DeploymentID'))))]",
+    "spektraPlan": {
+      "name": "[parameters('spektraImageSku')]",
+      "publisher": "spektra",
+      "product": "cloudlabs-windows-jumpvm"
+    },
+    "spektraImage": {
+      "publisher": "Spektra",
+      "offer": "cloudlabs-windows-jumpvm",
+      "sku": "[parameters('spektraImageSku')]",
+      "version": "latest"
+    },
+    "desktopImage": {
+      "publisher": "MicrosoftWindowsDesktop",
+      "offer": "windows-11",
+      "sku": "[parameters('windowsDesktopSku')]",
+      "version": "latest"
+    },
+    "trustedLaunchProfile": {
+      "securityType": "TrustedLaunch",
+      "uefiSettings": {
+        "secureBootEnabled": true,
+        "vTpmEnabled": true
+      }
+    },
+    "commonScriptCommand": "[concat('powershell -ExecutionPolicy Bypass -File psscript-01.ps1 -AzureUserName \"', parameters('azureUserName'), '\" -AzurePassword \"', parameters('azurePassword'), '\" -AzureTenantID \"', subscription().tenantId, '\" -AzureSubscriptionID \"', subscription().subscriptionId, '\" -ODLID \"', parameters('ODLID'), '\" -DeploymentID \"', parameters('DeploymentID'), '\" -vmAdminUsername \"', parameters('adminUsername'), '\" -vmAdminPassword \"', parameters('adminPassword'), '\" -trainerUserName \"', parameters('trainerUserName'), '\" -trainerUserPassword \"', parameters('trainerUserPassword'), '\"')]",
+    "labScriptCommand": "powershell -ExecutionPolicy Bypass -File labsetup.ps1",
+    "bootstrapCommand": "[concat(variables('commonScriptCommand'), ' & ', variables('labScriptCommand'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('nsgName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-rdp",
+            "properties": {
+              "priority": 1000,
+              "protocol": "Tcp",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "3389"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('pipName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Regional"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "publicIPAddressVersion": "IPv4",
+        "idleTimeoutInMinutes": 15,
+        "dnsSettings": {
+          "domainNameLabel": "[variables('dnsLabel')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('vnetName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.0.0.0/16"
+          ]
+        },
+        "dhcpOptions": {
+          "dnsServers": []
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "10.0.0.0/24",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('nicName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+      ],
+      "properties": {
+        "enableAcceleratedNetworking": false,
+        "enableIPForwarding": false,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+        },
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "primary": true,
+              "privateIPAddressVersion": "IPv4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+              },
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-07-01",
+      "name": "[variables('LabVMName')]",
+      "location": "[resourceGroup().location]",
+      "plan": "[if(parameters('useSpektraImage'), variables('spektraPlan'), json('null'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('computerName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "allowExtensionOperations": true,
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": false,
+            "patchSettings": {
+              "patchMode": "Manual",
+              "assessmentMode": "ImageDefault"
+            },
+            "timeZone": "Pacific Standard Time"
+          }
+        },
+        "storageProfile": {
+          "imageReference": "[if(parameters('useSpektraImage'), variables('spektraImage'), variables('desktopImage'))]",
+          "osDisk": {
+            "name": "[concat(variables('LabVMName'), '-osdisk')]",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "diskSizeGB": 256,
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            },
+            "deleteOption": "Delete"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]",
+              "properties": {
+                "primary": true,
+                "deleteOption": "Delete"
+              }
+            }
+          ]
+        },
+        "securityProfile": "[if(parameters('useSpektraImage'), json('null'), variables('trustedLaunchProfile'))]",
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2024-07-01",
+      "name": "[concat(variables('LabVMName'), '/bootstrap')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('LabVMName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.10",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[variables('scripturl')]",
+            "[variables('labScriptUrl')]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[variables('bootstrapCommand')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "vmServerDnsName": {
+      "type": "string",
+      "value": "[if(empty(reference(resourceId('Microsoft.Network/publicIPAddresses', variables('pipName')), '2023-09-01').dnsSettings.fqdn), reference(resourceId('Microsoft.Network/publicIPAddresses', variables('pipName')), '2023-09-01').ipAddress, reference(resourceId('Microsoft.Network/publicIPAddresses', variables('pipName')), '2023-09-01').dnsSettings.fqdn)]"
+    },
+    "vmServerUsername": {
+      "type": "string",
+      "value": "[parameters('adminUsername')]"
+    },
+    "vmServerPassword": {
+      "type": "string",
+      "value": "[parameters('adminPassword')]"
+    },
+    "trainerUserName": {
+      "type": "string",
+      "value": "[parameters('trainerUserName')]"
+    },
+    "trainerUserPassword": {
+      "type": "string",
+      "value": "[parameters('trainerUserPassword')]"
+    },
+    "labWorkspacePath": {
+      "type": "string",
+      "value": "C:\\LabFiles\\DevQuickStart"
+    }
+  }
+}
