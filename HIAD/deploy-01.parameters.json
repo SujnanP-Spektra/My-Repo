@@ -25,9 +25,6 @@
     },
     "trainerUserPassword": {
       "value": "GEN-PASSWORD"
-    },
-    "serviceEnvironmentUrl": {
-      "value": "GET-SERVICE-ENV-URL"
     }
   }
 }
