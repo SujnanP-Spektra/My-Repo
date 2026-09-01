@@ -35,8 +35,7 @@
     }
   },
   "variables": {
-    "scripturl": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/refs/heads/main/HIAD/script.ps1",
-    "userdata": "[concat('$url = \"', variables('scripturl'),'\"; $arg = \"', variables('arg'), '\"')]",
+    "scripturl": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/script.ps1",
     "arg": "[concat(variables('arg1'),variables('arg2'),variables('arg3'),variables('arg4'),variables('arg5'),variables('arg6'))]",
     "arg1": "[concat(' -AzureUserName ', parameters('AzureUserName'), ' -AzurePassword ', parameters('AzurePassword'))]",
     "arg2": "[concat(' -AzureTenantID ', variables('AzureTenantID'), ' -AzureSubscriptionID ', variables('AzureSubscriptionID'))]",
@@ -55,9 +54,12 @@
     "subnetPrefix": "10.0.0.0/24",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/',variables('virtualNetworkName'), variables('subnetName'))]",
     "virtualMachineSize": "Standard_D2s_v3",
-    "virtualNetworkName": "labvNet",
+    "virtualNetworkName": "[concat('cloudlabs-vnet-', parameters('DeploymentID'))]",
     "vmName": "[concat('labvm-',parameters('DeploymentID'))]",
-    "location": "[resourceGroup().location]"
+    "location": "[resourceGroup().location]",
+    "containerSubnetName": "container-subnet",
+    "containerSubnetPrefix": "10.0.1.0/24",
+    "diskStorageType": "StandardSSD_LRS"
   },
   "resources": [
     {
@@ -76,6 +78,12 @@
             "name": "[variables('subnetName')]",
             "properties": {
               "addressPrefix": "[variables('subnetPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('containerSubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('containerSubnetPrefix')]"
             }
           }
         ]
@@ -104,11 +112,6 @@
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))]"
       ],
-      "plan": {
-        "name": "win2019",
-        "publisher": "spektra",
-        "product": "cloudlabs-windows-jumpvm"
-      },
       "properties": {
         "osProfile": {
           "computerName": "[variables('vmName')]",
@@ -123,16 +126,17 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "Spektra",
-            "offer": "cloudlabs-windows-jumpvm",
-            "sku": "win2019",
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter-g2",
             "version": "latest"
           },
           "osDisk": {
-            "createOption": "fromImage",
             "name": "[concat(variables('vmName'), '-osdisk')]",
+            "createOption": "FromImage",
+            "diskSizeGB": 128,
             "managedDisk": {
-              "storageAccountType": "Premium_LRS"
+              "storageAccountType": "[variables('diskStorageType')]"
             }
           },
           "dataDisks": []
@@ -143,9 +147,37 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
             }
           ]
-        },
-        "userData": "[base64(variables('userdata'))]"
-      }
+        }
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "apiVersion": "2015-06-15",
+          "name": "[concat(variables('vmName'),'/', 'winExtension')]",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+          ],
+          "tags": {
+            "displayName": "VM Extension"
+          },
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.8",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "https://experienceazure.blob.core.windows.net/templates/cloudlabs-common/cloudlabs-windows-functions.ps1",
+                "[variables('scripturl')]"
+              ]
+            },
+            "protectedSettings": {
+              "commandToExecute": "[concat('powershell.exe -ExecutionPolicy ByPass -File script.ps1', variables('arg'))]"
+            }
+          }
+        }
+      ]
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
