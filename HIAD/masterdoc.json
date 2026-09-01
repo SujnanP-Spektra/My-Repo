@@ -1,0 +1,41 @@
+[
+    {
+        "Name": "proactive-customer-intelligence-d365-customer-service",
+        "Language": "English",
+        "BaseURL": "https://docs-api.cloudlabs.ai/repos/github.com/CloudLabsAI-Azure/hack-in-a-day-challenges",
+        "Files": [
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/overview.md",
+                "Order": 1
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/getting-started.md",
+                "Order": 2
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/prerequisites.md",
+                "Order": 3
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/challenge-1.md",
+                "Order": 4
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/challenge-2.md",
+                "Order": 5
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/challenge-3.md",
+                "Order": 6
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/challenge-4.md",
+                "Order": 7
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/CloudLabsAI-Azure/hack-in-a-day-challenges/refs/heads/main/proactive-customer-intelligence-d365-customer-service/challenge-5.md",
+                "Order": 8
+            }
+        ]
+    }
+]
