@@ -9,8 +9,7 @@ Param (
     [string] $adminUsername,
     [string] $adminPassword,
     [string] $trainerUserName,
-    [string] $trainerUserPassword,
-    [string] $serviceEnvironmentUrl
+    [string] $trainerUserPassword
 )
 
 Start-Transcript -Path C:\WindowsAzure\Logs\CloudLabsCustomScriptExtension.txt -Append
@@ -470,9 +469,6 @@ if ($edgeExe) {
         "Power Automate"              = "https://make.powerautomate.com"
         "Power BI Service"            = "https://app.powerbi.com"
     }
-    if (-not [string]::IsNullOrWhiteSpace($serviceEnvironmentUrl)) {
-        $shortcuts["Copilot Service workspace"] = ($serviceEnvironmentUrl.TrimEnd('/') + "/main.aspx?appid=&pagetype=entitylist&etn=incident")
-    }
     $wsh = New-Object -ComObject WScript.Shell
     foreach ($name in $shortcuts.Keys) {
         $lnk = $wsh.CreateShortcut("C:\Users\Public\Desktop\$name.lnk")
@@ -487,7 +483,6 @@ if ($edgeExe) {
 @"
 Deployment ID:            $DeploymentID
 Service environment:      ODL_User $DeploymentID Service
-Service environment URL:  $serviceEnvironmentUrl
 
 Solution:                 Proactive Customer Intelligence  (publisher prefix: cchs)
 Copilot Studio agent:     Customer Health Monitor
