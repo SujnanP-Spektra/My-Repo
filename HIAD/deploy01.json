@@ -25,24 +25,16 @@
     },
     "trainerUserPassword": {
       "type": "string"
-    },
-    "serviceEnvironmentUrl": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Pre-provisioned Dynamics 365 Customer Service environment URL for this learner (e.g. https://orgxxxxxxx.crm.dynamics.com/). Produced before the event by provisioning/1-create-cs-envs.ps1 and mapped into the CloudLabs deployment per ODL user. Leave empty to skip creating the Copilot Service workspace desktop shortcut."
-      }
     }
   },
   "variables": {
     "scripturl": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/script.ps1",
-    "arg": "[concat(variables('arg1'),variables('arg2'),variables('arg3'),variables('arg4'),variables('arg5'),variables('arg6'))]",
+    "arg": "[concat(variables('arg1'),variables('arg2'),variables('arg3'),variables('arg4'),variables('arg5'))]",
     "arg1": "[concat(' -AzureUserName ', parameters('AzureUserName'), ' -AzurePassword ', parameters('AzurePassword'))]",
     "arg2": "[concat(' -AzureTenantID ', variables('AzureTenantID'), ' -AzureSubscriptionID ', variables('AzureSubscriptionID'))]",
     "arg3": "[concat(' -ODLID ', parameters('ODLID'), ' -DeploymentID ', parameters('DeploymentID'))]",
     "arg4": "[concat(' -adminUsername ', parameters('adminUsername'), ' -adminPassword ', parameters('adminPassword'))]",
     "arg5": "[concat(' -trainerUserName ', parameters('trainerUserName'), ' -trainerUserPassword ', parameters('trainerUserPassword'))]",
-    "arg6": "[concat(' -serviceEnvironmentUrl ''', parameters('serviceEnvironmentUrl'), '''')]",
     "AzureSubscriptionID": "[subscription().subscriptionId]",
     "AzureTenantID": "[subscription().tenantId]",
     "addressPrefix": "10.0.0.0/16",
@@ -261,10 +253,6 @@
     "trainerUserPassword": {
       "type": "string",
       "value": "[parameters('trainerUserPassword')]"
-    },
-    "Service Environment URL": {
-      "type": "string",
-      "value": "[parameters('serviceEnvironmentUrl')]"
     },
     "Service Environment Name": {
       "type": "string",
