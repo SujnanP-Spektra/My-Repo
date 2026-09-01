@@ -1,0 +1,41 @@
+[
+    {
+        "Name": "proactive-customer-intelligence-d365-customer-service",
+        "Language": "English",
+        "BaseURL": "https://docs-api.cloudlabs.ai/repos/github.com/SujnanP-Spektra/My-Repo",
+        "Files": [
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/overview.md",
+                "Order": 1
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/getting-started.md",
+                "Order": 2
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/prerequisites.md",
+                "Order": 3
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/challenge-1.md",
+                "Order": 4
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/challenge-2.md",
+                "Order": 5
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/challenge-3.md",
+                "Order": 6
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/challenge-4.md",
+                "Order": 7
+            },
+            {
+                "RawFilePath": "https://docs-api.cloudlabs.ai/repos/raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/challenge-5.md",
+                "Order": 8
+            }
+        ]
+    }
+]
