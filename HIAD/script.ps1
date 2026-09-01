@@ -18,25 +18,24 @@ Start-Transcript -Path C:\WindowsAzure\Logs\CloudLabsCustomScriptExtension.txt -
 
 # ---------------------------------------------------------------------------
 # CloudLabs common functions
-# The cloudlabs-windows-jumpvm image ships with Chocolatey, Edge and the VM
-# validator already baked in, so this script does not re-run WindowsServerCommon.
+# The CustomScriptExtension downloads cloudlabs-windows-functions.ps1 alongside
+# this script, preserving the blob's folder structure, so it dot-sources from
+# .\cloudlabs-common\ in the extension's working directory.
 # ---------------------------------------------------------------------------
-New-Item -ItemType Directory -Path C:\LabFiles -Force | Out-Null
-New-Item -ItemType Directory -Path C:\Packages -Force | Out-Null
+$path = (Get-Location).Path
+$commonscriptpath = "$path" + "\cloudlabs-common\cloudlabs-windows-functions.ps1"
+. $commonscriptpath
 
-$commonScript = "C:\LabFiles\cloudlabs-windows-functions.ps1"
-try {
-    (New-Object System.Net.WebClient).DownloadFile(
-        "https://experienceazure.blob.core.windows.net/templates/cloudlabs-common/cloudlabs-windows-functions.ps1",
-        $commonScript)
-    . $commonScript
-    Write-Output "CloudLabs common functions loaded."
-}
-catch {
-    Write-Output "FAILED to load CloudLabs common functions: $($_.Exception.Message)"
-}
-
+# ---------------------------------------------------------------------------
+# Base VM configuration
+# This is a plain Windows Server 2022 image, so the standard CloudLabs block
+# runs in full — Chocolatey, Edge, the credentials file and the VM validator.
+# ---------------------------------------------------------------------------
+WindowsServerCommon
+InstallAzPowerShellModule
+InstallAzCLI
 CreateCredFile $AzureUserName $AzurePassword $AzureTenantID $AzureSubscriptionID $DeploymentID
+InstallModernVmValidator
 Enable-CloudLabsEmbeddedShadow $adminUsername $trainerUserName $trainerUserPassword
 
 # Power BI Desktop is required for authoring the report in Challenge 04
@@ -54,6 +53,8 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Force
 
 $assetPath = "C:\Users\Public\Desktop\Lab Assets"
 New-Item -ItemType Directory -Path $assetPath -Force | Out-Null
+New-Item -ItemType Directory -Path C:\LabFiles -Force | Out-Null
+New-Item -ItemType Directory -Path C:\Packages -Force | Out-Null
 
 # --- Generate-LabData.ps1, written to disk so the logon task can re-run it ---
 $generator = @'
