@@ -1,0 +1,11 @@
+AccountCode,AccountName,AssignedCSM,ContractRenewalDate,CurrentHealthTier,City
+ACC-1001,Fabrikam Residences,Priya Nair,2027-04-02,Green,Seattle
+ACC-1002,Northwind Traders,Priya Nair,2027-03-03,Green,Seattle
+ACC-1003,Adventure Works Cycles,Priya Nair,2027-01-02,Green,Seattle
+ACC-1004,Tailspin Toys,Jordan Blake,2026-12-08,Green,Seattle
+ACC-1005,Woodgrove Bank,Jordan Blake,2026-11-18,Green,Seattle
+ACC-1006,Contoso Suites,Jordan Blake,2026-11-03,Green,Seattle
+ACC-1007,Litware Inc.,Maria Chen,2026-10-19,Green,Seattle
+ACC-1008,Proseware Inc.,Maria Chen,2026-09-29,Green,Seattle
+ACC-1009,VanArsdel Ltd.,Maria Chen,2026-09-24,Green,Seattle
+ACC-1010,Relecloud,Maria Chen,2026-09-19,Green,Seattle

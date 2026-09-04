@@ -1,0 +1,58 @@
+CaseTitle,AccountName,AccountCode,CaseReference,Priority,Status,CreatedOn,ResolvedOn,CSATScore,ResolutionHours
+Scheduled sync failed overnight,Northwind Traders,ACC-1002,ACC-1002-C001,Low,Resolved,2026-08-21 13:00,2026-08-21 16:00,4.6,3.0
+Integration endpoint returning 500 errors,Adventure Works Cycles,ACC-1003,ACC-1003-C001,Low,Resolved,2026-08-14 11:00,2026-08-14 14:36,4.76,3.6
+Password reset emails not delivered,Adventure Works Cycles,ACC-1003,ACC-1003-C002,Normal,Resolved,2026-08-24 14:00,2026-08-24 17:24,4.24,3.4
+Permission change not reflected for team,Tailspin Toys,ACC-1004,ACC-1004-C001,Normal,Resolved,2026-08-14 11:00,2026-08-14 16:00,3.97,5.0
+Duplicate records created after merge,Tailspin Toys,ACC-1004,ACC-1004-C002,Low,Resolved,2026-08-11 09:00,2026-08-11 14:12,4.25,5.2
+Export to Excel truncates rows,Tailspin Toys,ACC-1004,ACC-1004-C003,Low,Resolved,2026-08-21 11:00,2026-08-21 15:48,4.38,4.8
+Invoice export missing line items,Woodgrove Bank,ACC-1005,ACC-1005-C001,Normal,Resolved,2026-08-23 08:00,2026-08-23 15:06,3.48,7.1
+Attachment upload times out,Woodgrove Bank,ACC-1005,ACC-1005-C002,Normal,Resolved,2026-08-14 10:00,2026-08-14 16:42,3.87,6.7
+Export to Excel truncates rows,Woodgrove Bank,ACC-1005,ACC-1005-C003,Normal,Resolved,2026-09-01 08:00,2026-09-01 15:06,3.7,7.1
+Scheduled sync failed overnight,Woodgrove Bank,ACC-1005,ACC-1005-C004,Normal,Resolved,2026-08-12 16:00,2026-08-12 23:00,3.71,7.0
+Password reset emails not delivered,Woodgrove Bank,ACC-1005,ACC-1005-C005,Normal,Resolved,2026-08-18 13:00,2026-08-18 20:06,3.24,7.1
+API rate limit reached unexpectedly,Woodgrove Bank,ACC-1005,ACC-1005-C006,High,Active,2026-08-30 16:00,,,
+Integration endpoint returning 500 errors,Contoso Suites,ACC-1006,ACC-1006-C001,Normal,Resolved,2026-08-23 12:00,2026-08-23 21:18,3.18,9.3
+Scheduled sync failed overnight,Contoso Suites,ACC-1006,ACC-1006-C002,Low,Resolved,2026-08-23 08:00,2026-08-23 16:48,2.94,8.8
+API rate limit reached unexpectedly,Contoso Suites,ACC-1006,ACC-1006-C003,Normal,Resolved,2026-08-28 09:00,2026-08-28 17:54,3.43,8.9
+Scheduled sync failed overnight,Contoso Suites,ACC-1006,ACC-1006-C004,Low,Resolved,2026-08-12 12:00,2026-08-12 20:42,3.29,8.7
+Integration endpoint returning 500 errors,Contoso Suites,ACC-1006,ACC-1006-C005,Normal,Resolved,2026-08-15 10:00,2026-08-15 18:48,3.2,8.8
+User cannot access reporting module,Contoso Suites,ACC-1006,ACC-1006-C006,Normal,Resolved,2026-08-18 11:00,2026-08-18 20:30,3.16,9.5
+Permission change not reflected for team,Contoso Suites,ACC-1006,ACC-1006-C007,High,Active,2026-08-29 11:00,,,
+Password reset emails not delivered,Litware Inc.,ACC-1007,ACC-1007-C001,Normal,Resolved,2026-08-24 15:00,2026-08-25 00:48,3.18,9.8
+Scheduled sync failed overnight,Litware Inc.,ACC-1007,ACC-1007-C002,Low,Resolved,2026-08-31 16:00,2026-09-01 01:42,3.16,9.7
+Attachment upload times out,Litware Inc.,ACC-1007,ACC-1007-C003,Normal,Resolved,2026-08-28 11:00,2026-08-28 21:00,2.8,10.0
+Integration endpoint returning 500 errors,Litware Inc.,ACC-1007,ACC-1007-C004,Normal,Resolved,2026-08-18 09:00,2026-08-18 18:48,3.05,9.8
+Attachment upload times out,Litware Inc.,ACC-1007,ACC-1007-C005,Normal,Resolved,2026-08-21 14:00,2026-08-22 00:12,2.95,10.2
+User cannot access reporting module,Litware Inc.,ACC-1007,ACC-1007-C006,Normal,Resolved,2026-08-11 16:00,2026-08-12 02:30,2.86,10.5
+Duplicate records created after merge,Litware Inc.,ACC-1007,ACC-1007-C007,High,Active,2026-08-30 13:00,,,
+Scheduled sync failed overnight,Litware Inc.,ACC-1007,ACC-1007-C008,High,Active,2026-08-26 16:00,,,
+Mobile app crashes on record save,Proseware Inc.,ACC-1008,ACC-1008-C001,Normal,Resolved,2026-08-08 08:00,2026-08-08 21:42,2.65,13.7
+Duplicate records created after merge,Proseware Inc.,ACC-1008,ACC-1008-C002,Low,Resolved,2026-09-01 08:00,2026-09-01 22:06,2.35,14.1
+Permission change not reflected for team,Proseware Inc.,ACC-1008,ACC-1008-C003,Low,Resolved,2026-08-12 16:00,2026-08-13 06:00,2.44,14.0
+Attachment upload times out,Proseware Inc.,ACC-1008,ACC-1008-C004,Low,Resolved,2026-08-23 10:00,2026-08-24 00:06,2.36,14.1
+Attachment upload times out,Proseware Inc.,ACC-1008,ACC-1008-C005,Normal,Resolved,2026-08-11 15:00,2026-08-12 05:12,2.52,14.2
+Scheduled sync failed overnight,Proseware Inc.,ACC-1008,ACC-1008-C006,Low,Resolved,2026-08-24 14:00,2026-08-25 03:54,2.43,13.9
+Password reset emails not delivered,Proseware Inc.,ACC-1008,ACC-1008-C007,Normal,Resolved,2026-08-21 09:00,2026-08-21 23:00,3.45,14.0
+Invoice export missing line items,Proseware Inc.,ACC-1008,ACC-1008-C008,High,Active,2026-09-02 13:00,,,
+User cannot access reporting module,Proseware Inc.,ACC-1008,ACC-1008-C009,High,Active,2026-08-30 13:00,,,
+Mobile app crashes on record save,VanArsdel Ltd.,ACC-1009,ACC-1009-C001,Low,Resolved,2026-08-17 13:00,2026-08-18 05:06,2.5,16.1
+Scheduled sync failed overnight,VanArsdel Ltd.,ACC-1009,ACC-1009-C002,Normal,Resolved,2026-08-21 16:00,2026-08-22 07:48,2.65,15.8
+Invoice export missing line items,VanArsdel Ltd.,ACC-1009,ACC-1009-C003,Normal,Resolved,2026-08-16 12:00,2026-08-17 04:12,2.29,16.2
+Invoice export missing line items,VanArsdel Ltd.,ACC-1009,ACC-1009-C004,Normal,Resolved,2026-08-16 09:00,2026-08-17 01:00,2.55,16.0
+Export to Excel truncates rows,VanArsdel Ltd.,ACC-1009,ACC-1009-C005,Normal,Resolved,2026-08-23 13:00,2026-08-24 05:00,2.11,16.0
+API rate limit reached unexpectedly,VanArsdel Ltd.,ACC-1009,ACC-1009-C006,Low,Resolved,2026-08-24 13:00,2026-08-25 04:48,2.33,15.8
+Duplicate records created after merge,VanArsdel Ltd.,ACC-1009,ACC-1009-C007,Normal,Resolved,2026-08-18 11:00,2026-08-19 03:06,2.37,16.1
+Notification rules not firing,VanArsdel Ltd.,ACC-1009,ACC-1009-C008,High,Active,2026-08-28 08:00,,,
+Integration endpoint returning 500 errors,VanArsdel Ltd.,ACC-1009,ACC-1009-C009,High,Active,2026-08-25 09:00,,,
+Attachment upload times out,VanArsdel Ltd.,ACC-1009,ACC-1009-C010,High,Active,2026-09-03 13:00,,,
+Data import rejected on validation,Relecloud,ACC-1010,ACC-1010-C001,Low,Resolved,2026-08-28 10:00,2026-08-29 04:12,2.17,18.2
+Performance degradation on dashboard load,Relecloud,ACC-1010,ACC-1010-C002,Low,Resolved,2026-08-11 10:00,2026-08-12 04:00,2.39,18.0
+Duplicate records created after merge,Relecloud,ACC-1010,ACC-1010-C003,Normal,Resolved,2026-08-21 09:00,2026-08-22 03:18,1.91,18.3
+Permission change not reflected for team,Relecloud,ACC-1010,ACC-1010-C004,Normal,Resolved,2026-08-12 13:00,2026-08-13 06:48,2.47,17.8
+Data import rejected on validation,Relecloud,ACC-1010,ACC-1010-C005,Normal,Resolved,2026-08-18 10:00,2026-08-19 04:00,2.17,18.0
+Scheduled sync failed overnight,Relecloud,ACC-1010,ACC-1010-C006,Low,Resolved,2026-08-29 09:00,2026-08-30 02:48,2.46,17.8
+Attachment upload times out,Relecloud,ACC-1010,ACC-1010-C007,Normal,Resolved,2026-08-28 16:00,2026-08-29 10:00,2.05,18.0
+Duplicate records created after merge,Relecloud,ACC-1010,ACC-1010-C008,Low,Resolved,2026-08-14 12:00,2026-08-15 05:54,1.98,17.9
+Invoice export missing line items,Relecloud,ACC-1010,ACC-1010-C009,High,Active,2026-09-03 09:00,,,
+Attachment upload times out,Relecloud,ACC-1010,ACC-1010-C010,High,Active,2026-08-28 11:00,,,
+Notification rules not firing,Relecloud,ACC-1010,ACC-1010-C011,High,Active,2026-08-31 08:00,,,
