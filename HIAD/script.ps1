@@ -173,6 +173,7 @@ function Get-HealthScore {
 function New-CaseRows {
     param(
         [string]$AccountCode,
+        [string]$AccountName,
         [int]$TotalCases,
         [int]$OpenCritical,
         [object]$TargetCsat,
@@ -198,6 +199,7 @@ function New-CaseRows {
         $resolvedOn = $created.AddHours([double]$resValues[$i])
         $rows += [pscustomobject]@{
             CaseTitle        = $caseTitles[$script:rng.Next(0, $caseTitles.Count - 1)]
+            AccountName      = $AccountName
             AccountCode      = $AccountCode
             CaseReference    = "$AccountCode-C{0:D3}" -f $seq
             Priority         = @("Normal", "Low", "Normal")[$script:rng.Next(0, 3)]
@@ -215,6 +217,7 @@ function New-CaseRows {
         $created = $today.AddDays(-$ageDays).AddHours($script:rng.Next(8, 17))
         $rows += [pscustomobject]@{
             CaseTitle        = $caseTitles[$script:rng.Next(0, $caseTitles.Count - 1)]
+            AccountName      = $AccountName
             AccountCode      = $AccountCode
             CaseReference    = "$AccountCode-C{0:D3}" -f $seq
             Priority         = "High"
@@ -262,7 +265,7 @@ foreach ($a in $baseline) {
         City                = "Seattle"
     }
 
-    $baselineCases += New-CaseRows -AccountCode $a.Code -TotalCases $a.Cases -OpenCritical $a.Critical `
+    $baselineCases += New-CaseRows -AccountCode $a.Code -AccountName $a.Name -TotalCases $a.Cases -OpenCritical $a.Critical `
                                    -TargetCsat $a.Csat -TargetResolutionHours $a.Res
 
     $s = Get-HealthScore -Cases $a.Cases -Csat $a.Csat -ResolutionHours $a.Res -RenewalDays $a.RenewalDays -OpenCritical $a.Critical
@@ -295,7 +298,7 @@ foreach ($a in $round2) {
         AccountName         = $base.Name
         ContractRenewalDate = $today.AddDays($a.RenewalDays).ToString("yyyy-MM-dd")
     }
-    $round2Cases += New-CaseRows -AccountCode $a.Code -TotalCases $a.Cases -OpenCritical $a.Critical `
+    $round2Cases += New-CaseRows -AccountCode $a.Code -AccountName $base.Name -TotalCases $a.Cases -OpenCritical $a.Critical `
                                  -TargetCsat $a.Csat -TargetResolutionHours $a.Res
 
     $s = Get-HealthScore -Cases $a.Cases -Csat $a.Csat -ResolutionHours $a.Res -RenewalDays $a.RenewalDays -OpenCritical $a.Critical
@@ -311,7 +314,7 @@ foreach ($a in $round2) {
 # ---------------------------------------------------------------------------
 
 $recovery = @{ Code = "ACC-1008"; RenewalDays = 25; Cases = 5; Csat = 4.0; Res = 6.0; Critical = 0 }
-$recoveryCases = New-CaseRows -AccountCode $recovery.Code -TotalCases $recovery.Cases -OpenCritical $recovery.Critical `
+$recoveryCases = New-CaseRows -AccountCode $recovery.Code -AccountName "Proseware Inc." -TotalCases $recovery.Cases -OpenCritical $recovery.Critical `
                               -TargetCsat $recovery.Csat -TargetResolutionHours $recovery.Res
 
 $s = Get-HealthScore -Cases $recovery.Cases -Csat $recovery.Csat -ResolutionHours $recovery.Res `
@@ -346,6 +349,9 @@ accounts.csv          Prerequisite, Task 4. Import into the Account table.
 cases-baseline.csv    Prerequisite, Task 4. Import into the Case table.
                       57 rows. Resolved rows carry CSAT Score and Resolution Hours;
                       Active rows are the open critical cases and carry neither.
+                      Map AccountName to customeridname - the Case Customer field is a
+                      polymorphic lookup and customerid itself is not offered by the
+                      importer, so the name is what resolves the link.
 
 accounts-round2.csv   Challenge 02, Task 6. Updated renewal dates only.
 cases-round2.csv      Challenge 02, Task 6. Delete the existing cases for
