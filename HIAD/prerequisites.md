@@ -20,9 +20,23 @@ Your environment has Dynamics 365 Customer Service installed and nothing else. T
 
 Everything you build today goes in one solution. This is not tidiness — an unmanaged solution is what makes the build exportable at the end of Challenge 05, and it is what a customer would expect to receive.
 
-1. In **Power Apps**, confirm the environment picker reads **ODL_User <inject key="DeploymentID" enableCopy="false"/> Service**, then go to **Solutions** and select **New solution**.
+1. Open **Power Apps** at `https://make.powerapps.com`. On first visit you will see a **Welcome to Power Apps** screen asking for your country or region — keep the default, leave the offers checkbox unticked, and select **Get started**. This appears once per account.
 
-1. Select **+ New publisher** and configure it:
+1. Confirm the environment picker in the top-right reads **ODL_User <inject key="DeploymentID" enableCopy="false"/> Service**, then go to **Solutions** and select **New solution**.
+
+   > **Important:** Power Apps opens in the tenant's Default environment on a fresh account — on this tenant it is named after the tenant itself, not after you. Switch it before you create anything. A solution, table or flow built in the wrong environment is invisible to every later challenge, and the symptom is a Dataverse table that "does not exist" despite you having just made it.
+
+   > **Hint:** The address bar is the reliable check, not the picker label. In the Default environment the URL reads `make.powerapps.com/environments/Default-<guid>/...`. Once you have switched correctly the `Default-` prefix is gone and the GUID is your own environment's. Check this again at the start of every challenge — Power Apps, Power Automate and Copilot Studio each remember their own selection, and switching one does not switch the others.
+
+1. On the **New solution** panel, fill in the solution's own details first:
+
+   | Field | Value |
+   |---|---|
+   | **Display name** | `Proactive Customer Intelligence` |
+   | **Name** | auto-fills as `ProactiveCustomerIntelligence` |
+   | **Version** | `1.0.0.0` — leave the default |
+
+1. The **Publisher** selector can only offer a publisher that already exists, so create yours now with **+ New publisher**:
 
    | Field | Value |
    |---|---|
@@ -30,16 +44,13 @@ Everything you build today goes in one solution. This is not tidiness — an unm
    | **Name** | `ContosoCustomerSuccess` |
    | **Prefix** | `cchs` |
 
-1. Save the publisher, then create the solution:
+1. Save the publisher, then select **Contoso Customer Success** in the solution's **Publisher** field.
 
-   | Field | Value |
-   |---|---|
-   | **Display name** | `Proactive Customer Intelligence` |
-   | **Publisher** | `Contoso Customer Success` |
+   > **Note:** The `cchs` prefix is what every custom table and column you create today will carry. Using the default publisher instead gives you a `crXXX_` prefix that differs per environment, which makes the guide's field names and your own diverge.
 
-1. Open the solution, and from the command bar set it as your **preferred solution**.
+1. Tick **Set as your preferred solution** on the same panel, then select **Create**.
 
-   > **Note:** The preferred solution setting is what makes Power Automate and Copilot Studio drop new components into this solution automatically. Without it you will build seven flows and an agent into the default solution, and you will discover it at the end of Challenge 05 when the export is empty.
+   > **Important:** Do not skip the preferred solution tick. It is what makes Power Automate and Copilot Studio drop new components into this solution automatically. Without it you will build seven flows and an agent into the default solution, and you will discover it at the end of Challenge 05 when the export comes back empty.
 
 ### Task 2: Extend the Account Table
 
@@ -50,18 +61,20 @@ Everything you build today goes in one solution. This is not tidiness — an unm
    | Display name | Data type | Configuration |
    |---|---|---|
    | `Account Code` | Single line of text | Format: Text. Business required |
-   | `Contract Renewal Date` | Date only | Time zone adjustment: **Date only** |
+   | `Contract Renewal Date` | Date and time, Format **Date only** | Time zone adjustment resolves to **Time zone independent** |
    | `Assigned CSM` | Single line of text | Format: Text |
    | `Current Health Tier` | Choice | Local choice: `Green`, `Blue`, `Red`. Default: `Green` |
    | `Recovery Note` | Multiple lines of text | Max length 4000 |
 
    > **Important:** Set `Contract Renewal Date` to **Date only** behaviour, not **User local**. A user-local date shifts across time zones, and your contract-proximity component is a day count. A one-day shift is enough to move an account across the 30-day escalation threshold and produce an alert your peer does not get.
 
-1. Correct the choice you just created. `Current Health Tier` must read `Green`, `Amber`, `Red` — edit the `Blue` label to `Amber` before continuing.
+   > **Hint:** For `Current Health Tier`, set **Sync with global choice?** to **No**. It defaults to **Yes (recommended)**, which asks you to select an existing global choice rather than letting you define your own. The three label fields only appear once you choose **No**. Pick **Choice**, not **Choices** — the plural allows multiple selections and an account has one tier. Note the integer values Dataverse assigns each label; Challenge 04 filters on those rather than on the labels.
 
-   > **Note:** That was deliberate. Choice labels are editable but the underlying integer values are not renumbered, which matters in Challenge 04 when you filter on them. Confirm now that the three values are contiguous.
+   > **Hint:** For `Contract Renewal Date`, choose **Date and time** as the data type, then set **Format** to **Date only**. There is no top-level "Date only" data type in the dropdown. **Time zone adjustment** then reads **Time zone independent**, which is the setting that stops the date shifting across time zones.
 
-1. Add `Account Code`, `Contract Renewal Date` and `Assigned CSM` to the account main form, then **Save and publish**.
+1. Add `Account Code`, `Contract Renewal Date` and `Assigned CSM` to the **Account for Multisession experience** form, then **Save and publish**.
+
+   > **Important:** The Account table has nine forms of type **Main** and they look interchangeable. **Account for Multisession experience** is the one Copilot Service workspace renders. Edit any other and your change will be saved, real, published — and invisible in the app.
 
    > **Important:** Publish the form. An unpublished form change is saved, real, and invisible in the app — the usual symptom is a learner insisting the columns were never created.
 
@@ -73,10 +86,12 @@ The Case table already tracks satisfaction and resolution time. Neither is usabl
 
    | Display name | Data type | Configuration |
    |---|---|---|
-   | `CSAT Score` | Decimal number | Precision 2, minimum 1.00, maximum 5.00 |
-   | `Resolution Hours` | Decimal number | Precision 1, minimum 0.0 |
+   | `CSAT Score` | Decimal number | Minimum 1, maximum 5, **decimal places 2** |
+   | `Resolution Hours` | Decimal number | Minimum 0, maximum 1000, **decimal places 1** |
 
-1. Add both columns to the case main form and **Save and publish**.
+1. Add both columns to the **Case for Multisession experience** form, then **Save and publish**.
+
+   > **Important:** As with Account, the Case table carries nine **Main** forms. **Case for Multisession experience** is the one the app renders. If your columns do not appear on a case later, try **Enhanced full case form** — newer Customer Service releases render that one instead.
 
    > **Note:** The out-of-the-box satisfaction field is a whole-number choice, so an account whose five resolved cases average 4.6 cannot be represented by it. Actual resolution duration lives on the case resolution record rather than the case, and is not importable. Two custom decimal columns are the correct call here, and they are also what a real Customer Voice integration would land in.
 
@@ -86,7 +101,17 @@ The Case table already tracks satisfaction and resolution time. Neither is usabl
 
 1. In **Power Apps**, open the **Account** table and select **Import** > **Import data from Excel**, choose **Text/CSV**, and upload `accounts.csv`.
 
-1. On the mapping screen, map every column, including `Account Code`, `Contract Renewal Date` and `Assigned CSM`. Import, then confirm ten accounts exist.
+1. On the mapping screen, review what the importer matched. Four columns map automatically; **ContractRenewalDate** and **CurrentHealthTier** appear under **Possible match** with a *mismatched column metadata* warning — select **Accept match** on both. The warning refers to a text-to-date conversion and is expected.
+
+   > **Important:** Set **PrimaryContactEmail** to unmapped. The importer suggests `primarycontactid`, which is a lookup to the Contact table rather than an email field. No matching contacts exist, so leaving it mapped either fails those rows or silently writes an empty lookup. The address is not used anywhere in this lab.
+
+   You should finish with six mapped columns: `address1_city`, `cchs_accountcode`, `cchs_assignedcsm`, `cchs_contractrenewaldate`, `cchs_currenthealthtier` and `name`.
+
+1. Select **Import**, then wait for it to finish. The upload confirmation appears almost immediately, but the import itself is a background job — watch the notifications panel for the completion message rather than the upload one.
+
+   > **Note:** Allow **two to five minutes**. If the table still looks empty after that, refresh the portal before assuming the import failed — the grid does not always update on its own.
+
+1. Confirm ten accounts exist, then spot-check one. Open `ACC-1008` Proseware Inc. and verify **Account Code**, **Contract Renewal Date** and **Assigned CSM** are all populated, with the renewal date roughly 25 days from today.
 
 1. Now import the cases. Open the **Case** table, select **Import** > **Import data from Excel**, and upload `cases-baseline.csv`.
 
