@@ -1,0 +1,46 @@
+[
+  {
+    "CaseTitle": "Order sync delayed after scheduled maintenance",
+    "AccountCode": "ACC-1008",
+    "AccountName": "Proseware Inc.",
+    "CaseReference": "ACC-1008-R001",
+    "Priority": "Normal",
+    "Status": "Resolved",
+    "DaysAgo": 22,
+    "CSATScore": 3.5,
+    "ResolutionHours": 6.0
+  },
+  {
+    "CaseTitle": "Duplicate records created by the nightly import",
+    "AccountCode": "ACC-1008",
+    "AccountName": "Proseware Inc.",
+    "CaseReference": "ACC-1008-R002",
+    "Priority": "Normal",
+    "Status": "Resolved",
+    "DaysAgo": 15,
+    "CSATScore": 4.0,
+    "ResolutionHours": 7.0
+  },
+  {
+    "CaseTitle": "Reporting export timing out on large date ranges",
+    "AccountCode": "ACC-1008",
+    "AccountName": "Proseware Inc.",
+    "CaseReference": "ACC-1008-R003",
+    "Priority": "Normal",
+    "Status": "Resolved",
+    "DaysAgo": 10,
+    "CSATScore": 3.5,
+    "ResolutionHours": 6.5
+  },
+  {
+    "CaseTitle": "Notification emails not reaching the shared mailbox",
+    "AccountCode": "ACC-1008",
+    "AccountName": "Proseware Inc.",
+    "CaseReference": "ACC-1008-R004",
+    "Priority": "Low",
+    "Status": "Resolved",
+    "DaysAgo": 6,
+    "CSATScore": 4.0,
+    "ResolutionHours": 7.5
+  }
+]
