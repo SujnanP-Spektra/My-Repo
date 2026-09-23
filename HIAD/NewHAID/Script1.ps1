@@ -38,33 +38,7 @@ InstallModernVmValidator
 Enable-CloudLabsEmbeddedShadow $adminUsername $trainerUserName $trainerUserPassword
 
 # Power BI Desktop is required for authoring the report in Challenge 04
-# D1: InstallPowerBiDesktopChoco in cloudlabs-windows-functions.ps1 carries a
-# package name that no longer resolves, so Desktop silently fails to install and
-# the attendee discovers it at Challenge 04 Task 1. That file is shared and not
-# ours to change, so install directly here and verify rather than trust it.
-$pbiBin = @("C:\Program Files\Microsoft Power BI Desktop\bin\PBIDesktop.exe",
-            "C:\Program Files (x86)\Microsoft Power BI Desktop\bin\PBIDesktop.exe")
-$pbiOk = $false
-foreach ($pkg in @("powerbi", "powerbidesktop")) {
-    if ($pbiOk) { break }
-    try {
-        choco install $pkg -y --no-progress --ignore-checksums
-        Start-Sleep -Seconds 5
-        foreach ($b in $pbiBin) { if (Test-Path $b) { $pbiOk = $true } }
-    }
-    catch { Write-Output "choco install $pkg failed: $($_.Exception.Message)" }
-}
-if (-not $pbiOk) {
-    try {
-        $msi = "C:\Packages\PBIDesktopSetup_x64.msi"
-        Invoke-WebRequest -Uri "https://aka.ms/pbiSingleInstaller" -OutFile $msi -UseBasicParsing
-        Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /qn ACCEPT_EULA=1" -Wait
-        foreach ($b in $pbiBin) { if (Test-Path $b) { $pbiOk = $true } }
-    }
-    catch { Write-Output "Power BI MSI fallback failed: $($_.Exception.Message)" }
-}
-if ($pbiOk) { Write-Output "Power BI Desktop installed." }
-else { Write-Output "ERROR: Power BI Desktop NOT installed - Challenge 04 Task 1 will block." }
+InstallPowerBiDesktopChoco
 
 # ---------------------------------------------------------------------------
 # Lab-specific setup: Proactive Customer Intelligence
@@ -263,11 +237,12 @@ function ConvertTo-LoaderJson {
     <#
         Reshapes case rows for the attendee's loader flow.
 
-        Drops CreatedOn/ResolvedOn in favour of DaysAgo, so the flow resolves the
-        creation date at run time with addDays(utcNow(), -DaysAgo) rather than
-        inheriting a timestamp baked in when the ODL was deployed. A pooled ODL
-        opened a week later would otherwise carry cases outside the trailing
-        30-day window, and the account reads as having no case history at all.
+        challenge-2.md Task 6 and challenge-5.md Task 4 both tell the learner to
+        load a .json file into a flow that takes a JSON array. This emits it.
+
+        DaysAgo replaces CreatedOn so the flow resolves the date at run time with
+        addDays(utcNow(), -DaysAgo), rather than inheriting a timestamp baked in
+        when the ODL was deployed.
 
         Empty CSAT/ResolutionHours become real nulls. Power Automate treats "" as
         a value, and an empty string written to a decimal column fails Create row.
@@ -390,16 +365,16 @@ foreach ($a in $round2) {
 # so the contract component is still whatever round 2 set. Using the baseline figure
 # publishes an expected score the learner's environment cannot produce.
 $round2Renewal1008 = ($round2 | Where-Object { $_.Code -eq "ACC-1008" }).RenewalDays
-# FOUR loaded cases, not five. The learner creates the fifth as the recovery
-# case in Challenge 05 Task 4, so loading five would give six. Four at these
+# FOUR loaded cases, not five. challenge-5.md Task 4 has the learner create the
+# fifth themselves as the recovery case, so loading five gives six. Four at these
 # targets plus the learner's case at CSAT 5.0 / 3.0 hours average to exactly
-# 4.0 and 6.0 across five, which is the verified low-sixties Amber result.
+# 4.0 and 6.0 across five, which is what the guide's expected result assumes.
 $recovery     = @{ Code = "ACC-1008"; RenewalDays = $round2Renewal1008; Cases = 4; Csat = 3.75; Res = 6.75; Critical = 0 }
 $postRecovery = @{ Cases = 5; Csat = 4.0; Res = 6.0; Critical = 0 }
 $recoveryCases = New-CaseRows -AccountCode $recovery.Code -AccountName "Proseware Inc." -TotalCases $recovery.Cases -OpenCritical $recovery.Critical `
                               -TargetCsat $recovery.Csat -TargetResolutionHours $recovery.Res
 
-# The expected row describes the state AFTER the learner resolves their case.
+# Describes the state AFTER the learner resolves their own recovery case.
 $s = Get-HealthScore -Cases $postRecovery.Cases -Csat $postRecovery.Csat -ResolutionHours $postRecovery.Res `
                      -RenewalDays $recovery.RenewalDays -OpenCritical $postRecovery.Critical
 $expected += [pscustomobject]@{
@@ -419,9 +394,6 @@ $round2Cases    | Export-Csv -Path (Join-Path $OutputPath "cases-round2.csv")   
 $recoveryCases  | Export-Csv -Path (Join-Path $OutputPath "cases-recovery.csv")    -NoTypeInformation -Encoding UTF8
 $expected       | Export-Csv -Path (Join-Path $OutputPath "expected-scores.csv")   -NoTypeInformation -Encoding UTF8
 
-# JSON for the attendee's loader flow. challenge-2.md Task 6 and challenge-5.md
-# Task 4 both instruct the learner to load .json into a flow that takes a JSON
-# array; until now the script emitted CSV only and neither instruction worked.
 ConvertTo-LoaderJson -Rows $baselineCases -Reference $today | ConvertTo-Json -Depth 4 |
     Set-Content -Path (Join-Path $OutputPath "cases-baseline.json") -Encoding UTF8
 ConvertTo-LoaderJson -Rows $round2Cases   -Reference $today | ConvertTo-Json -Depth 4 |
@@ -574,29 +546,7 @@ else {
     Write-Output "MISSING lab assets: $($missing -join ', ')"
 }
 
-# Report the oldest case date. Anything beyond 30 days is outside the scoring
-# window, which makes every expected score in Challenge 01 unreachable. This is
-# the single fastest triage signal when an attendee reports wrong scores.
-$baselinePath = Join-Path $assetPath "cases-baseline.csv"
-if (Test-Path $baselinePath) {
-    try {
-        $dates = Import-Csv $baselinePath |
-                 ForEach-Object { [datetime]::ParseExact($_.CreatedOn, 'yyyy-MM-dd HH:mm', $null) }
-        $oldest = ($dates | Measure-Object -Minimum).Minimum
-        $ageDays = [int]((Get-Date).Date - $oldest.Date).Days
-        if ($ageDays -gt 30) {
-            Write-Output "WARNING: oldest seeded case is $ageDays days old - OUTSIDE the 30-day scoring window. Regeneration has not run. Challenge 01 expected scores will not match."
-        }
-        else {
-            Write-Output "Seed data is current - oldest case is $ageDays days old."
-        }
-    }
-    catch {
-        Write-Output "Could not read case dates: $($_.Exception.Message)"
-    }
-}
-
-# Confirm Power BI Desktop landed, since Challenge 04 depends on it
+# Confirm Power BI Desktop landed, since Challenge 5 depends on it
 $pbiPaths = @(
     "C:\Program Files\Microsoft Power BI Desktop\bin\PBIDesktop.exe",
     "C:\Program Files (x86)\Microsoft Power BI Desktop\bin\PBIDesktop.exe"
@@ -605,7 +555,7 @@ if ($pbiPaths | Where-Object { Test-Path $_ }) {
     Write-Output "Power BI Desktop is installed."
 }
 else {
-    Write-Output "WARNING: Power BI Desktop not found. Challenge 04 Task 1 CANNOT be done in the Power BI service - modelling and measures need Desktop. Escalate to lab support."
+    Write-Output "WARNING: Power BI Desktop not found. Challenge 5 can be completed in the Power BI service instead."
 }
 
 Stop-Transcript
@@ -663,13 +613,8 @@ Flows:
   Service-Recovery-Trigger-$DeploymentID
   Service-Recovery-Closure-$DeploymentID
 
-  Write-Health-Alert-$DeploymentID
-  Load-Case-Data                         (Prerequisite Task 4, your own loader)
-
-AI Builder prompts:
+AI Builder prompt:
   Generate-Outreach-Email-$DeploymentID
-  Portfolio-Summary-$DeploymentID
-  Service-Recovery-Summary-$DeploymentID
 
 Power BI:
   Workspace: ws-custhealth-$DeploymentID
@@ -687,24 +632,10 @@ Set-ItemProperty -Path $AutoLogonRegPath -Name "DefaultUsername" -Value "$($env:
 Set-ItemProperty -Path $AutoLogonRegPath -Name "DefaultPassword" -Value "$adminPassword" -Type String
 Set-ItemProperty -Path $AutoLogonRegPath -Name "AutoLogonCount" -Value "1" -Type DWord
 
-# Two triggers, not one.
-#
-# AutoLogonCount is 1, so autologon fires once. If nobody signs in to the VM
-# again - and most of this lab is done from the attendee's own browser - the
-# logon task never runs and the seed data is never refreshed. Observed in a live
-# environment: cases up to 44 days old against a 30-day scoring window, which
-# silently invalidates every expected score in Challenge 01.
-#
-# The daily trigger makes the refresh happen whether or not anyone signs in.
-$User = "$($env:ComputerName)\$adminUsername"
-$Action = New-ScheduledTaskAction -Execute "PowerShell.exe" `
-              -Argument "-ExecutionPolicy Bypass -File C:\LabFiles\logon.ps1"
-$Triggers = @(
-    (New-ScheduledTaskTrigger -AtLogOn),
-    (New-ScheduledTaskTrigger -Daily -At 5am)
-)
-Register-ScheduledTask -TaskName "CloudLabs Lab Setup" -Trigger $Triggers -User $User `
-                       -Action $Action -RunLevel Highest -Force
+$Trigger = New-ScheduledTaskTrigger -AtLogOn
+$User    = "$($env:ComputerName)\$adminUsername"
+$Action  = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -File C:\LabFiles\logon.ps1"
+Register-ScheduledTask -TaskName "CloudLabs Lab Setup" -Trigger $Trigger -User $User -Action $Action -RunLevel Highest -Force
 
 Get-ChocoInstallReport
 
