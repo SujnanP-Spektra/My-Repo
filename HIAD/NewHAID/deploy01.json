@@ -28,7 +28,7 @@
     }
   },
   "variables": {
-    "scripturl": ""scripturl": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/main/HIAD/NewHAID/script.ps1"",
+    "scripturl": ""scripturl": "https://raw.githubusercontent.com/SujnanP-Spektra/My-Repo/refs/heads/main/HIAD/NewHAID/script.ps1"",
     "arg": "[concat(variables('arg1'),variables('arg2'),variables('arg3'),variables('arg4'),variables('arg5'))]",
     "arg1": "[concat(' -AzureUserName ', parameters('AzureUserName'), ' -AzurePassword ', parameters('AzurePassword'))]",
     "arg2": "[concat(' -AzureTenantID ', variables('AzureTenantID'), ' -AzureSubscriptionID ', variables('AzureSubscriptionID'))]",
